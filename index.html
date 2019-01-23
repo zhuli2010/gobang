@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style type='text/css'>
+    #chess {
+        display: block;
+        margin: 50px auto;
+        box-shadow: -2px -2px 2px #efefef, 5px 5px 5px #b9b9b9;
+        cursor: pointer;
+        padding: 15px;
+        position: relative;
+    }
+    table {
+      width: 100%;
+      height: 100%;
+      pointer-events:none;
+    }
+    .btn-wrap { 
+        display: flex; 
+        flex-direction: row; 
+        justify-content:center;
+    }
+    .btn-wrap div { 
+        margin: 0 10px;
+    }
+    div>span {
+        display: inline-block;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: #EE82EE;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    div.unable span { 
+        background: #D6D6D4; 
+        color: #adacaa;
+    }
+    .chess {
+      position: absolute;
+      pointer-events:none;
+    }
+    .blue {
+      background: blue;
+    }
+    #result-wrap {text-align: center;}
+</style>
+</head>
+<body>
+
+    <div class="btn-wrap">
+        <div id='restart' class="restart">
+            <span>重新开始</span>
+        </div>
+        <div id='goback' class="goback unable">
+            <span>悔棋</span>
+        </div>
+        <div id='return' class="return unable">
+            <span>撤销悔棋</span>
+        </div>
+    </div>
+    <div id="chess" style="width: 450px;height: 450px;"></div>
+</body>
+<script src="./index.js"></script>
+<script>
+  let chess = new ChessBord(document.getElementById("chess"),function(el){
+    let tableDom = document.createElement('table')
+    tableDom.setAttribute('border','1')
+    tableDom.setAttribute('cellspacing', '0')
+    tableDom.setAttribute('border-collapse', 'collapse')
+    for (let i = 0; i < 15; i++) {
+      const tr = document.createElement('tr')
+
+      for(let j = 0; j < 15; j ++) {
+        tr.appendChild(document.createElement('td'))
+        tableDom.appendChild(tr)
+      }
+      el.appendChild(tableDom)
+    }
+  })
+  ChessBord.prototype.domStep = function(el,i,j,from,wd) {
+    let chess = document.createElement('label')
+    chess.className = 'chess'
+    chess.style.width = wd - 2 + 'px'
+    chess.style.height = wd - 2 + 'px'
+    chess.style.borderRadius = wd/2 + 'px'
+    chess.style.left =  i * wd + 'px'
+    chess.style.top =  j * wd + 'px'
+    let color = from ? '#0A0A0A,#636766':'#d1d1d1,#F9F9F9'
+    
+    chess.style.background =  `radial-gradient(circle at center, ${color})`
+
+    el.appendChild(chess)
+    return chess
+  }
+  ChessBord.prototype.destroyDomStep = function(el,i,j,wd){
+    el.removeChild(chess.allChess.pop())
+  }
+  let back = document.getElementById("goback")
+  let cancelBack = document.getElementById("return")
+  chess.modifyBack = function (isClicked) {
+    if (!isClicked) {
+      back.className += ' unable'
+    } else {
+      back.className = back.className.replace(/ unable/, '')
+    }
+  }
+  chess.modifyCancelBack = function(isClicked) {
+    if (!isClicked) {
+      cancelBack.className += ' unable'
+    } else {
+      cancelBack.className = back.className.replace(/ unable/, '')
+    }
+  }
+  back.onclick = chess.back
+  cancelBack.onclick = chess.cancelBack
+  document.getElementById("restart").onclick = chess.reload
+</script>
+
+</html>
